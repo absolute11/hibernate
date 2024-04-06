@@ -9,9 +9,11 @@ import java.util.List;
 import org.example.hibernate.repository.*;
 @RestController
 public class PersonController {
-    @Autowired
-    private PersonRepository personRepository;
+    private final PersonRepository personRepository;
 
+    public PersonController(PersonRepository personRepository) {
+        this.personRepository = personRepository;
+    }
     @GetMapping("/persons/by-city")
     public List<Person> getPersonsByCity(@RequestParam String city) {
         return personRepository.getPersonsByCity(city);

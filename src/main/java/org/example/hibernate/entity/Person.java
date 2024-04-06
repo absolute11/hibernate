@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "PERSONS")
+@IdClass(PersonId.class)
 public class Person implements Serializable {
     @Id
     @Column(name = "name")
