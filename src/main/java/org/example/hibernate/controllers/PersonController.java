@@ -1,21 +1,60 @@
 package org.example.hibernate.controllers;
 
 import org.example.hibernate.entity.Person;
+import org.example.hibernate.entity.PersonId;
+import org.example.hibernate.services.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.Optional;
+
 import org.example.hibernate.repository.*;
 @RestController
+@RequestMapping("/persons")
 public class PersonController {
-    private final PersonRepository personRepository;
+    private final PersonService personService;
 
-    public PersonController(PersonRepository personRepository) {
-        this.personRepository = personRepository;
+    @Autowired
+    public PersonController(PersonService personService) {
+        this.personService = personService;
     }
-    @GetMapping("/persons/by-city")
+
+    @GetMapping("/by-city")
     public List<Person> getPersonsByCity(@RequestParam String city) {
-        return personRepository.getPersonsByCity(city);
+
+        return personService.getPersonsByCity(city);
     }
+
+    @GetMapping("/by-age")
+    public List<Person> getPersonsByAge(@RequestParam int age) {
+        return personService.findByAgeLessThanOrderByAgeAsc(age);
+    }
+
+    @GetMapping("/by-name-surname")
+    public Optional<Person> getPersonByNameAndSurname(@RequestParam String name, @RequestParam String surname) {
+        return personService.findByNameAndSurname(name, surname);
+    }
+
+    @PostMapping("/create")
+    public Person createPerson(@RequestBody Person person) {
+        return personService.createPerson(person);
+    }
+    @PutMapping("/update/{name}/{surname}/{age}")
+    public ResponseEntity<Person> updatePerson(
+            @PathVariable String name,
+            @PathVariable String surname,
+            @PathVariable int age,
+            @RequestBody Person updatedPerson) {
+        return personService.updatePerson(name, surname, age, updatedPerson);
+    }
+    @DeleteMapping("/delete/{name}/{surname}/{age}")
+    public ResponseEntity<Void> deletePerson(
+            @PathVariable String name,
+            @PathVariable String surname,
+            @PathVariable int age) {
+        return personService.deleteById(name, surname, age);
+    }
+
 }
